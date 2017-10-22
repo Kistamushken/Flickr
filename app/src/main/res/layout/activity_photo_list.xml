@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="70dp"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp">
+
+        <android.support.v7.widget.SearchView
+            app:searchIcon="@drawable/ic_search_white_24dp"
+            app:closeIcon="@drawable/ic_close_white_24dp"
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            app:iconifiedByDefault="false"
+            android:layout_height="@dimen/bar_height"
+            android:background="@color/colorPrimary"
+            android:gravity="center_vertical"
+            app:queryHint="@string/search"
+            android:theme="@style/SearchViewStyle"
+            android:textSize="@dimen/text_size"/>
+
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

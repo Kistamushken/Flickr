@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Flickr</string>
+
+    <string name="error">Something went wrong</string>
+    <string name="search">Search…</string>
+
+    <string name="endpoint">https://api.flickr.com/services/rest/</string>
+    <string name="api_key">INSERT YOUR API KEY HERE</string>
+</resources>
