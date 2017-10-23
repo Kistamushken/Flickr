@@ -14,16 +14,19 @@ class PhotoListActivity : Activity() {
 
     @Inject lateinit var stateKeeper: StateKeeper
 
+    private lateinit var view: PhotoListView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         stateKeeper.restore(savedInstanceState)
         setContentView(R.layout.activity_photo_list)
+        view = PhotoListViewImpl(findViewById(android.R.id.content))
     }
 
     override fun onStart() {
         super.onStart()
-        presenter.bind(PhotoListViewImpl(findViewById(android.R.id.content)))
+        presenter.bind(view)
     }
 
     override fun onStop() {

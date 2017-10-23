@@ -8,10 +8,9 @@ In order for this app to work properly, please insert your Api Key into res/stri
 
 This project aims to provide implementation of the [MVI architecture](http://hannesdorfmann.com/android/mosby3-mvi-1)
 
-The app consists of one screen that shows photos. Upon enterning the App,
-you will be presenter with recent photos form Flickr(`?method=flickr.photos.getRecent`).
-Then you will be able to specify your own query `?method=flickr.photos.search` will be triggered
-
+The app consists of one screen that shows photos. Upon entering the App,
+you will be presented with recent photos form Flickr(`?method=flickr.photos.getRecent`).
+Then you will be able to specify your own query and `?method=flickr.photos.search` will be triggered
 
 ## <a name="architecture-overview" />Architecture Overview
 While it is far from pure, this project aims to provide implementation
@@ -23,9 +22,9 @@ Main screen is built with 3 main components: **View**, **Presenter** and a **Use
 
 **Responsibilities**
 * **View**. View is a passive entity, it receives states to render and
-provides Presenter with hot streams of events(e.g. load more event, query event, etc.)
+provides `Presenter` with hot streams of events(e.g. load more event, query event, etc.)
 
-* **Presenter**. Presenter is responsible for bridging business logic(i.e. `UseCase`)
+* **Presenter**. `Presenter` is responsible for bridging business logic(i.e. `UseCase`)
 with a view layer. It maps raw events from view into `ViewAction`s.
 Upon receiving new `ViewState` from a `UseCase` it calls
 `render` on the provided view to display the latest state.
@@ -52,3 +51,5 @@ implementation could be more reactive
 * **Adapter**. Generally, I would prefer something like [Konveyor](https://github.com/avito-tech/Konveyor)
  to work with RecyclerView. But it seemed like it would be on overkill.
 * **Lack of UI tests**
+* **Dagger modules** While not necessary a shortcut, Dagger modules are written
+in Java in order to take advantage of static `@Provides` methods

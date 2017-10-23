@@ -15,6 +15,10 @@ buildscript {
     }
 }
 
+ext.support_lib = '26.1.0'
+ext.retrofit = '2.3.0'
+ext.dagger = '2.12'
+
 allprojects {
     repositories {
         google()

@@ -82,5 +82,5 @@ sealed class PhotoScreenState(val photos: List<PhotoItem> = emptyList(),
 }
 
 private inline fun <reified I : Parcelable> Parcel.createList(): List<I> {
-    return mutableListOf<I>().apply { readList(this, List::class.java.classLoader) }
+    return mutableListOf<I>().apply { readList(this, I::class.java.classLoader) }
 }
