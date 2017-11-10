@@ -54,7 +54,7 @@ class PhotoListUseCaseTest {
 
     @Test
     fun `handle initial - loads recent from api - current state is Error and photos are empty`() {
-        stateContainer.state = Error(photos = emptyList())
+        stateContainer.state = error()
 
         useCase.handle(Initial()).executeOnTestSubscriber()
 
@@ -63,7 +63,7 @@ class PhotoListUseCaseTest {
 
     @Test
     fun `handle initial - loads recent from api - current state is Loading and photos are empty`() {
-        stateContainer.state = Loading(photos = emptyList())
+        stateContainer.state = loading(photos = emptyList())
 
         useCase.handle(Initial()).executeOnTestSubscriber()
 
@@ -72,7 +72,7 @@ class PhotoListUseCaseTest {
 
     @Test
     fun `handle initial - return previous state - current state is loaded`() {
-        stateContainer.state = Loaded()
+        stateContainer.state = loaded()
 
         val subscriber = useCase.handle(Initial()).executeOnTestSubscriber()
 
@@ -82,7 +82,7 @@ class PhotoListUseCaseTest {
 
     @Test
     fun `handle initial - return previous state - current state is Error and photos are not empty`() {
-        stateContainer.state = Error(photos = listOf(photoItem()))
+        stateContainer.state = error(photos = listOf(photoItem()))
 
         val subscriber = useCase.handle(Initial()).executeOnTestSubscriber()
 
@@ -92,7 +92,7 @@ class PhotoListUseCaseTest {
 
     @Test
     fun `handle initial - return previous state - current state is Loading and photos are not empty`() {
-        stateContainer.state = Loading(photos = listOf(photoItem()))
+        stateContainer.state = loaded(photos = listOf(photoItem()))
 
         val subscriber = useCase.handle(Initial()).executeOnTestSubscriber()
 
@@ -123,7 +123,7 @@ class PhotoListUseCaseTest {
 
     @Test
     fun `handle load more - loads next page of recent - state has no query`() {
-        stateContainer.state = Loaded(page = 1)
+        stateContainer.state = loaded(page = 1)
 
         useCase.handle(LoadMore()).executeImmediately()
 
@@ -132,7 +132,7 @@ class PhotoListUseCaseTest {
 
     @Test
     fun `handle load more - loads next page of search - state has query`() {
-        stateContainer.state = Loaded(page = 1, query = "query")
+        stateContainer.state = loaded(page = 1, query = "query")
 
         useCase.handle(LoadMore()).executeImmediately()
 
@@ -142,7 +142,7 @@ class PhotoListUseCaseTest {
     @Test
     fun `load - starts with Loading - always`() {
         givenRecentResponse(Single.just(photoResponse()))
-        stateContainer.state = Loaded(page = 1)
+        stateContainer.state = loaded()
 
         val subscriber = useCase.handle(LoadMore()).executeOnTestSubscriber()
 
@@ -153,7 +153,7 @@ class PhotoListUseCaseTest {
     fun `load - Loading state contains previous state with incremented page - always`() {
         val initialList = listOf(photoItem())
         givenRecentResponse(Single.just(photoResponse()))
-        stateContainer.state = Loaded(photos = initialList, page = 1, query = "query")
+        stateContainer.state = loaded(photos = initialList, page = 1, query = "query")
 
         val subscriber = useCase.handle(LoadMore()).executeOnTestSubscriber()
 
@@ -167,7 +167,7 @@ class PhotoListUseCaseTest {
     @Test
     fun `load - return Loaded with incremented page - on successful result`() {
         givenRecentResponse(Single.just(photoResponse()))
-        stateContainer.state = Loaded(page = 1)
+        stateContainer.state = loaded(page = 1)
 
         val subscriber = useCase.handle(LoadMore()).executeOnTestSubscriber()
 
@@ -179,7 +179,7 @@ class PhotoListUseCaseTest {
     @Test
     fun `load - wraps state into Loaded state - on successful result`() {
         givenSearchResponse(Single.just(photoResponse(listOf(photo(1L, "url")))))
-        stateContainer.state = Loaded(query = "query")
+        stateContainer.state = loaded(query = "query")
 
         val subscriber = useCase.handle(LoadMore()).executeOnTestSubscriber()
 
@@ -196,7 +196,7 @@ class PhotoListUseCaseTest {
     fun `load - adds new photos to existing list - on LoadMore action`() {
         val initialList = listOf(photoItem())
         givenSearchResponse(Single.just(photoResponse(listOf(photo(1L, "url")))))
-        stateContainer.state = Loaded(photos = initialList, query = "query")
+        stateContainer.state = loaded(photos = initialList, query = "query")
 
         val subscriber = useCase.handle(LoadMore()).executeOnTestSubscriber()
 
@@ -208,7 +208,7 @@ class PhotoListUseCaseTest {
         val oldItem = photoItem()
         val initialList = listOf(oldItem)
         givenSearchResponse(Single.just(photoResponse(listOf(photo(1L, "url")))))
-        stateContainer.state = Loaded(photos = initialList)
+        stateContainer.state = loaded(photos = initialList)
 
         val subscriber = useCase.handle(Query("query")).executeOnTestSubscriber()
 
@@ -221,7 +221,7 @@ class PhotoListUseCaseTest {
     @Test
     fun `load - wraps exception into Error - always`() {
         givenRecentResponse(Single.error(Throwable()))
-        stateContainer.state = Loaded(page = 1)
+        stateContainer.state = loaded()
 
         val subscriber = useCase.handle(LoadMore()).executeOnTestSubscriber()
 
@@ -233,7 +233,7 @@ class PhotoListUseCaseTest {
         val pageN = 100
         val initialList = listOf(photoItem())
         givenRecentResponse(Single.error(Throwable()))
-        stateContainer.state = Loaded(photos = initialList, page = pageN)
+        stateContainer.state = loaded(photos = initialList, page = pageN)
 
         val subscriber = useCase.handle(LoadMore()).executeOnTestSubscriber()
 
@@ -249,7 +249,7 @@ class PhotoListUseCaseTest {
     fun `load - does not add new photo - photo with this id already exists`() {
         val initialList = listOf(photoItem(id = 100L))
         givenRecentResponse(Single.just(photoResponse(listOf(photo(id = 100L)))))
-        stateContainer.state = Loaded(photos = initialList)
+        stateContainer.state = loaded(photos = initialList)
 
         val subscriber = useCase.handle(LoadMore()).executeOnTestSubscriber()
 
@@ -272,7 +272,7 @@ class PhotoListUseCaseTest {
                         )
                 )
         )
-        stateContainer.state = Loaded(photos = initialList)
+        stateContainer.state = loaded(photos = initialList)
 
         val subscriber = useCase.handle(LoadMore()).executeOnTestSubscriber()
 
@@ -306,6 +306,18 @@ class PhotoListUseCaseTest {
             secret = "",
             server = ""
     )
+
+    private fun error(photos:List<PhotoItem> = emptyList(),
+                      query: String? = null,
+                      page: Int = 1) = Error(photos, query, page)
+
+    private fun loaded(photos:List<PhotoItem> = emptyList(),
+                       query: String? = null,
+                       page: Int = 1) = Loaded(photos, query, page)
+
+    private fun loading(photos:List<PhotoItem> = emptyList(),
+                        query: String? = null,
+                        page: Int = 1) = Loading(photos, query, page)
 
     private fun photoItem(id: Long = 0L, url: String = "") = PhotoItem(id, url)
 

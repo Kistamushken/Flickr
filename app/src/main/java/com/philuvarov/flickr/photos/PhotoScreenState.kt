@@ -1,86 +1,34 @@
 package com.philuvarov.flickr.photos
 
-import android.os.Parcel
-import android.os.Parcelable
+import android.annotation.SuppressLint
 import com.philuvarov.flickr.base.ViewState
-import com.philuvarov.flickr.util.Parcelables.creator
+import kotlinx.android.parcel.Parcelize
 
-sealed class PhotoScreenState(val photos: List<PhotoItem> = emptyList(),
-                              val query: String? = null,
-                              val page: Int = 1) : ViewState {
+@SuppressLint("ParcelCreator")
+sealed class PhotoScreenState : ViewState {
 
-    override fun describeContents() = 0
+    abstract val photos: List<PhotoItem>
+    abstract val query: String?
+    abstract val page: Int
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        with(dest) {
-            writeList(photos)
-            writeString(query)
-            writeInt(page)
-        }
-    }
+    @Parcelize
+    data class Empty(override val photos: List<PhotoItem> = emptyList(),
+                     override val query: String? = null,
+                     override val page: Int = 1) : PhotoScreenState()
 
-    class Empty : PhotoScreenState() {
+    @Parcelize
+    data class Loading(override val photos: List<PhotoItem>,
+                       override val query: String?,
+                       override val page: Int) : PhotoScreenState()
 
-        companion object {
-            @JvmField
-            val CREATOR = creator { Empty() }
-        }
-    }
+    @Parcelize
+    data class Loaded(override val photos: List<PhotoItem>,
+                      override val query: String?,
+                      override val page: Int) : PhotoScreenState()
 
-    class Loading(
-            photos: List<PhotoItem> = emptyList(),
-            query: String? = null,
-            page: Int = 1) : PhotoScreenState(photos, query, page) {
+    @Parcelize
+    data class Error(override val photos: List<PhotoItem>,
+                     override val query: String?,
+                     override val page: Int) : PhotoScreenState()
 
-        companion object {
-            @JvmField
-            val CREATOR = creator {
-                Loading(
-                        createList(),
-                        readString(),
-                        readInt()
-                )
-            }
-        }
-    }
-
-    class Loaded(
-            photos: List<PhotoItem> = emptyList(),
-            query: String? = null,
-            page: Int = 1) : PhotoScreenState(photos, query, page) {
-
-        companion object {
-            @JvmField
-            val CREATOR = creator {
-                Loaded(
-                        createList(),
-                        readString(),
-                        readInt()
-                )
-            }
-        }
-    }
-
-    class Error(
-            photos: List<PhotoItem> = emptyList(),
-            query: String? = null,
-            page: Int = 1) : PhotoScreenState(photos, query, page) {
-
-        companion object {
-            @JvmField
-            val CREATOR = creator {
-                Error(
-                        createList(),
-                        readString(),
-                        readInt()
-                )
-            }
-        }
-
-    }
-
-}
-
-private inline fun <reified I : Parcelable> Parcel.createList(): List<I> {
-    return mutableListOf<I>().apply { readList(this, I::class.java.classLoader) }
 }
