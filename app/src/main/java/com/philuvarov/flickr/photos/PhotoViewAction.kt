@@ -1,9 +1,9 @@
 package com.philuvarov.flickr.photos
 
-import com.philuvarov.flickr.base.ViewAction
+import com.philuvarov.flickr.base.Msg
 
-sealed class PhotoScreenAction : ViewAction {
+sealed class PhotoScreenAction : Msg {
     class Initial : PhotoScreenAction()
-    class LoadMore : PhotoScreenAction()
+    class LoadMore : PhotoScreenAction() //TODO: Object
     class Query(val query: String) : PhotoScreenAction()
 }
