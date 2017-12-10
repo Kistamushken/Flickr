@@ -1,41 +1,31 @@
 package com.philuvarov.flickr.photos
 
-import android.app.Activity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import com.philuvarov.flickr.R
-import com.philuvarov.flickr.base.Presenter
-import com.philuvarov.flickr.base.StateKeeper
+import com.philuvarov.flickr.base.Dispatcher
 import dagger.android.AndroidInjection
 import javax.inject.Inject
 
-class PhotoListActivity : Activity() {
+class PhotoListActivity : AppCompatActivity() {
 
-    @Inject lateinit var presenter: Presenter<PhotoScreenState, PhotoListView>
-
-    @Inject lateinit var stateKeeper: StateKeeper
+    @Inject lateinit var dispatcher: Dispatcher<PhotoScreenState, PhotoScreenAction, PhotoListCommand>
 
     private lateinit var view: PhotoListView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        stateKeeper.restore(savedInstanceState)
         setContentView(R.layout.activity_photo_list)
-        view = PhotoListViewImpl(findViewById(android.R.id.content))
+        view = PhotoListView(findViewById(android.R.id.content))
     }
 
     override fun onStart() {
         super.onStart()
-        presenter.bind(view)
-    }
-
-    override fun onStop() {
-        presenter.unbind()
-        super.onStop()
+        dispatcher.bind(view, this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        stateKeeper.save(outState)
         super.onSaveInstanceState(outState)
     }
 

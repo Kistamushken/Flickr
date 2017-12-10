@@ -1,9 +1,10 @@
 package com.philuvarov.flickr.base
 
-import io.reactivex.Flowable
+import android.arch.lifecycle.ViewModel
+import io.reactivex.Observable
 
-interface UseCase<in VA : Msg, out VS : ViewState> {
+abstract class UseCase<VA : Msg, VS : ViewState, CMD: Cmd>: ViewModel() {
 
-    fun handle(action: VA): Flowable<out VS>
+    abstract fun process(intents: Observable<VA>): Observable<Pair<VS, CMD>>
 
 }

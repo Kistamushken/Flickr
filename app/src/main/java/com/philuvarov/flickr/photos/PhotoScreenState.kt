@@ -2,6 +2,8 @@ package com.philuvarov.flickr.photos
 
 import android.annotation.SuppressLint
 import com.philuvarov.flickr.base.ViewState
+import com.philuvarov.flickr.photos.PhotoScreenState.Loaded
+import com.philuvarov.flickr.photos.PhotoScreenState.Loading
 import kotlinx.android.parcel.Parcelize
 
 @SuppressLint("ParcelCreator")
@@ -32,3 +34,10 @@ sealed class PhotoScreenState : ViewState {
                      override val page: Int) : PhotoScreenState()
 
 }
+
+fun PhotoScreenState.toLoading(): Loading = Loading(photos, query, page)
+
+fun PhotoScreenState.toLoaded(photos: List<PhotoItem> = this.photos,
+                              query: String? = this.query,
+                              page: Int = this.page): Loaded = Loaded(photos, query, page)
+
