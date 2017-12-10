@@ -64,7 +64,7 @@ class PhotoListView(root: PlatformView) : View<PhotoScreenState, PhotoScreenActi
 
     override fun render(state: Observable<out PhotoScreenState>) {
         state
-                .doOnNext({
+                .subscribe({
                     Log.e("State rendered", "$state")
                     when (it) {
                         is PhotoScreenState.Empty -> refreshLayout.isRefreshing = true

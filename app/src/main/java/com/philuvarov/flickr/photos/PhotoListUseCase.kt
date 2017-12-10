@@ -26,8 +26,7 @@ class PhotoListUseCase @Inject constructor() : UseCase<PhotoScreenAction, PhotoS
         return intents
                 .scan(Empty() as PhotoScreenState to None as PhotoListCommand) { (state, _), action -> reduce(state, action) }
                 .replay(1)
-                .publish()
-                .autoConnect(0)
+                .autoConnect()
     }
 
     private fun reduce(oldState: PhotoScreenState, action: PhotoScreenAction): Pair<PhotoScreenState, PhotoListCommand> {
