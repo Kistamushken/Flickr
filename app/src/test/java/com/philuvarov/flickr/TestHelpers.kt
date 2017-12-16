@@ -27,3 +27,7 @@ fun <T, S> Observable<T>.executeOn(subscriber: S): Disposable where S : Observer
             .observeOn(trampoline())
             .subscribeWith(subscriber)
 }
+
+fun <T> TestObserver<T>.assertLastValue(condition: T.() -> Boolean) {
+    assertValueAt(valueCount() - 1) { condition(it) }
+}

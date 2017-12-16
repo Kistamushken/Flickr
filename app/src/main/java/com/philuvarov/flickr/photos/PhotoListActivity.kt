@@ -18,11 +18,11 @@ class PhotoListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_list)
         view = PhotoListView(findViewById(android.R.id.content))
+        dispatcher.bind(view, this)
     }
 
     override fun onStart() {
         super.onStart()
-        dispatcher.bind(view, this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
