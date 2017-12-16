@@ -1,28 +1,30 @@
 package com.philuvarov.flickr.base
 
-import android.arch.lifecycle.Lifecycle.Event.*
+import android.arch.lifecycle.Lifecycle.Event.ON_STOP
 import android.arch.lifecycle.LifecycleOwner
-import com.philuvarov.flickr.photos.PhotoScreenState
 import com.philuvarov.flickr.util.SchedulersProvider
 import com.trello.rxlifecycle2.android.lifecycle.kotlin.bindUntilEvent
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.Observables
 
 
-class Dispatcher<out VS : ViewState, MSG : Msg, CMD : Cmd>(
+class Dispatcher<out VS : ViewState, MSG : Msg>(
         private val schedulers: SchedulersProvider,
-        private val useCase: UseCase<MSG, VS, CMD>,
-        private val driver: Driver<MSG>) {
+        private val model: Model<MSG, VS>,
+        private val driver: Driver<MSG, VS>) {
 
     fun bind(view: View<VS, MSG>, lifecycle: LifecycleOwner) {
-
-        useCase.observe(
+        model.observe(
                 view
                         .intents()
-                        .publish {
+                        .publish { viewIntents ->
                             Observable.merge(
-                                    driver.results(Observables.combineLatest(it, useCase.states() as Observable<PhotoScreenState>).bindUntilEvent(lifecycle, ON_STOP)),
-                                    it
+                                    driver.results(
+                                            Observables
+                                                    .combineLatest(viewIntents, model.states())
+                                                    .bindUntilEvent(lifecycle, ON_STOP)
+                                    ),
+                                    viewIntents
 
                             )
                         }
@@ -30,7 +32,7 @@ class Dispatcher<out VS : ViewState, MSG : Msg, CMD : Cmd>(
         )
 
         view.render(
-                useCase
+                model
                         .states()
                         .observeOn(schedulers.mainThread())
                         .bindUntilEvent(lifecycle, ON_STOP)

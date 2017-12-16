@@ -4,7 +4,7 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
 import com.philuvarov.flickr.photos.PhotoListDriver;
-import com.philuvarov.flickr.photos.PhotoListUseCase;
+import com.philuvarov.flickr.photos.PhotoListModel;
 
 import dagger.Binds;
 import dagger.Module;
@@ -15,8 +15,8 @@ public abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(PhotoListUseCase.class)
-    abstract ViewModel photoListModel(PhotoListUseCase model);
+    @ViewModelKey(PhotoListModel.class)
+    abstract ViewModel photoListModel(PhotoListModel model);
 
     @Binds
     @IntoMap

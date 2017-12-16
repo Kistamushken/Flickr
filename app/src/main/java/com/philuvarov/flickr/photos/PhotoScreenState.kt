@@ -16,7 +16,7 @@ sealed class PhotoScreenState : ViewState {
     @Parcelize
     data class Empty(override val photos: List<PhotoItem> = emptyList(),
                      override val query: String? = null,
-                     override val page: Int = 1) : PhotoScreenState() {
+                     override val page: Int = 0) : PhotoScreenState() {
 
         override fun toString(): String {
             return super.toString()
@@ -59,7 +59,9 @@ sealed class PhotoScreenState : ViewState {
 
 }
 
-fun PhotoScreenState.toLoading(): Loading = Loading(photos, query, page)
+fun PhotoScreenState.toLoading(photos: List<PhotoItem> = this.photos,
+                               query: String? = this.query,
+                               page: Int = this.page): Loading = Loading(photos, query, page)
 
 fun PhotoScreenState.toLoaded(photos: List<PhotoItem> = this.photos,
                               query: String? = this.query,

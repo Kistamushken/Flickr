@@ -10,11 +10,15 @@ import android.widget.Toast
 import com.jakewharton.rxbinding2.support.v7.widget.queryTextChangeEvents
 import com.philuvarov.flickr.R
 import com.philuvarov.flickr.base.View
-import com.philuvarov.flickr.photos.PhotoScreenAction.*
+import com.philuvarov.flickr.photos.PhotoScreenAction.Initial
+import com.philuvarov.flickr.photos.PhotoScreenAction.LoadMore
+import com.philuvarov.flickr.photos.PhotoScreenAction.Query
+import com.philuvarov.flickr.photos.PhotoScreenState.Empty
+import com.philuvarov.flickr.photos.PhotoScreenState.Error
+import com.philuvarov.flickr.photos.PhotoScreenState.Loaded
+import com.philuvarov.flickr.photos.PhotoScreenState.Loading
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
-import io.reactivex.android.schedulers.AndroidSchedulers
-import java.util.concurrent.TimeUnit
 import android.view.View as PlatformView
 
 class PhotoListView(root: PlatformView) : View<PhotoScreenState, PhotoScreenAction> {
@@ -39,11 +43,8 @@ class PhotoListView(root: PlatformView) : View<PhotoScreenState, PhotoScreenActi
                 loadMoreEvents(),
                 loadInitialEvents(),
                 querySubmissions()
-//                test()
         )
     }
-
-    private fun test() = Observable.interval(2, 1, TimeUnit.SECONDS).doOnNext { Log.e("Tick", "$it")}.map { Test() }
 
     private fun loadMoreEvents(): Observable<LoadMore> {
         return Observable.create<LoadMore> { e ->
@@ -54,7 +55,7 @@ class PhotoListView(root: PlatformView) : View<PhotoScreenState, PhotoScreenActi
         }
     }
 
-    private fun loadInitialEvents(): Observable<PhotoScreenAction.Initial> = Observable.just(Initial)
+    private fun loadInitialEvents(): Observable<Initial> = Observable.just(Initial)
 
     private fun querySubmissions(): Observable<Query> {
         return searchView
@@ -65,61 +66,32 @@ class PhotoListView(root: PlatformView) : View<PhotoScreenState, PhotoScreenActi
 
     override fun render(state: Observable<out PhotoScreenState>) {
         state
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnComplete{
-                    val x = 0
-                    val z = 2
-                }
-                .doOnDispose {
-                    val x = 0
-                    val z = 2
-                }
-                .doOnTerminate{
-                    val x = 0
-                    val z = 2
-                }
                 .subscribe({
                     Log.e("State rendered", "$it")
                     when (it) {
-                        is PhotoScreenState.Empty -> refreshLayout.isRefreshing = true
-                        is PhotoScreenState.Loading -> refreshLayout.isRefreshing = true
-                        is PhotoScreenState.Loaded ->  {
-                            refreshLayout.isRefreshing = false
-                            photosAdapter.items = it.photos
-                            if (recycler.adapter == null) {
-                                recycler.adapter = photosAdapter
-                            }
-                            photosAdapter.notifyDataSetChanged()
+                        is Empty -> refreshLayout.isRefreshing = true
+                        is Loading -> {
+                            refreshLayout.isRefreshing = true
+                            setPhotos(it.photos)
                         }
-                        is PhotoScreenState.Error -> {
+                        is Loaded ->  {
+                            refreshLayout.isRefreshing = false
+                            setPhotos(it.photos)
+                        }
+                        is Error -> {
                             refreshLayout.isRefreshing = false
                             Snackbar.make(recycler, R.string.error, Toast.LENGTH_SHORT).show()
                         }
                     }
-                },{
-                    val x = 0
-                    val z = 2
-                })
+                },{})
     }
 
-    override fun render(it: PhotoScreenState) {
-        Log.e("State rendered", "$it")
-        when (it) {
-            is PhotoScreenState.Empty -> refreshLayout.isRefreshing = true
-            is PhotoScreenState.Loading -> refreshLayout.isRefreshing = true
-            is PhotoScreenState.Loaded -> {
-                refreshLayout.isRefreshing = false
-                photosAdapter.items = it.photos
-                if (recycler.adapter == null) {
-                    recycler.adapter = photosAdapter
-                }
-                photosAdapter.notifyDataSetChanged()
-            }
-            is PhotoScreenState.Error -> {
-                refreshLayout.isRefreshing = false
-                Snackbar.make(recycler, R.string.error, Toast.LENGTH_SHORT).show()
-            }
+    private fun setPhotos(photos: List<PhotoItem>) {
+        photosAdapter.items = photos
+        if (recycler.adapter == null) {
+            recycler.adapter = photosAdapter
         }
+        photosAdapter.notifyDataSetChanged()
     }
 
     private inner class ScrollListener(
