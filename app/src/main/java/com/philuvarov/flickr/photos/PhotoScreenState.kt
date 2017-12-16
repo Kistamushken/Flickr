@@ -16,22 +16,46 @@ sealed class PhotoScreenState : ViewState {
     @Parcelize
     data class Empty(override val photos: List<PhotoItem> = emptyList(),
                      override val query: String? = null,
-                     override val page: Int = 1) : PhotoScreenState()
+                     override val page: Int = 1) : PhotoScreenState() {
+
+        override fun toString(): String {
+            return super.toString()
+        }
+    }
 
     @Parcelize
     data class Loading(override val photos: List<PhotoItem>,
                        override val query: String?,
-                       override val page: Int) : PhotoScreenState()
+                       override val page: Int) : PhotoScreenState() {
+
+        override fun toString(): String {
+            return super.toString()
+        }
+    }
 
     @Parcelize
     data class Loaded(override val photos: List<PhotoItem>,
                       override val query: String?,
-                      override val page: Int) : PhotoScreenState()
+                      override val page: Int) : PhotoScreenState() {
+
+        override fun toString(): String {
+            return super.toString()
+        }
+    }
 
     @Parcelize
     data class Error(override val photos: List<PhotoItem>,
                      override val query: String?,
-                     override val page: Int) : PhotoScreenState()
+                     override val page: Int) : PhotoScreenState() {
+
+        override fun toString(): String {
+            return super.toString()
+        }
+    }
+
+    override fun toString(): String {
+        return "State: ${this.javaClass.simpleName}, Photos: ${photos.size}, Query: $query, Page: $page"
+    }
 
 }
 

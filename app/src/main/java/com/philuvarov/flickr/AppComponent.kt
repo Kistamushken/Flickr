@@ -1,6 +1,7 @@
 package com.philuvarov.flickr
 
 import com.philuvarov.flickr.remote.ApiModule
+import com.philuvarov.flickr.viewmodel.ViewModelModule
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -9,12 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-        modules = arrayOf(
-                AppModule::class,
-                AndroidInjectionModule::class,
-                ActivityBinder::class,
-                ApiModule::class
-        )
+        modules = [(AppModule::class), (AndroidInjectionModule::class), (ActivityBinder::class), (ApiModule::class), (ViewModelModule::class)]
 )
 interface AppComponent : AndroidInjector<App> {
 

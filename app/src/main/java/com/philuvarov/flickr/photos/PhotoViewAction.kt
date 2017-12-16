@@ -9,4 +9,5 @@ sealed class PhotoScreenAction : Msg {
     class PageLoaded(val photos: List<PhotoItem>, val query: String?, val page: Int) : PhotoScreenAction()
     class QueryLoaded(val photos: List<PhotoItem>, val query: String?) : PhotoScreenAction()
     class LoadingError(val query: String?, val page: Int) : PhotoScreenAction()
+    class Test() : PhotoScreenAction()
 }

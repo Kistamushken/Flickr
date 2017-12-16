@@ -2,9 +2,13 @@ package com.philuvarov.flickr.photos
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import com.philuvarov.flickr.R
 import com.philuvarov.flickr.base.Dispatcher
 import dagger.android.AndroidInjection
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
+import java.util.*
 import javax.inject.Inject
 
 class PhotoListActivity : AppCompatActivity() {
