@@ -1,7 +1,11 @@
 package com.philuvarov.flickr.base
 
-interface View<in VS: ViewState> {
+import io.reactivex.Observable
 
-    fun render(state: VS)
+interface View<in VS : ViewState, MSG : Msg> {
+
+    fun intents(): Observable<MSG>
+
+    fun render(state: Observable<out VS>)
 
 }

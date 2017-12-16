@@ -2,9 +2,10 @@ package com.philuvarov.flickr.photos
 
 import com.philuvarov.flickr.base.Converter
 import com.philuvarov.flickr.remote.model.Photo
+import dagger.Reusable
 import javax.inject.Inject
 
-@PhotosScope
+@Reusable
 class PhotoItemConverter @Inject constructor() : Converter<Photo, PhotoItem> {
 
     override fun convert(value: Photo) = PhotoItem(value.id, value.url ?: buildUrl(value))

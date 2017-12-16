@@ -6,22 +6,22 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.util.Log
-import android.widget.Toast.LENGTH_SHORT
-import com.jakewharton.rxbinding2.support.v7.widget.SearchViewQueryTextEvent
+import android.widget.Toast
 import com.jakewharton.rxbinding2.support.v7.widget.queryTextChangeEvents
 import com.philuvarov.flickr.R
 import com.philuvarov.flickr.base.View
+import com.philuvarov.flickr.photos.PhotoScreenAction.Initial
+import com.philuvarov.flickr.photos.PhotoScreenAction.LoadMore
+import com.philuvarov.flickr.photos.PhotoScreenAction.Query
+import com.philuvarov.flickr.photos.PhotoScreenState.Empty
+import com.philuvarov.flickr.photos.PhotoScreenState.Error
+import com.philuvarov.flickr.photos.PhotoScreenState.Loaded
+import com.philuvarov.flickr.photos.PhotoScreenState.Loading
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import android.view.View as PlatformView
 
-interface PhotoListView: View<PhotoScreenState> {
-    fun loadMoreEvents(): Observable<Unit>
-    fun loadInitialEvents(): Observable<Unit>
-    fun querySubmissions(): Observable<SearchViewQueryTextEvent>
-}
-
-class PhotoListViewImpl(root: PlatformView) : PhotoListView {
+class PhotoListView(root: PlatformView) : View<PhotoScreenState, PhotoScreenAction> {
 
     private val recycler = root.findViewById<RecyclerView>(R.id.recycler)
     private val searchView = root.findViewById<SearchView>(R.id.search)
@@ -38,8 +38,16 @@ class PhotoListViewImpl(root: PlatformView) : PhotoListView {
         recycler.layoutManager = lm
     }
 
-    override fun loadMoreEvents(): Observable<Unit> {
-        return Observable.create<Unit> { e ->
+    override fun intents(): Observable<PhotoScreenAction> {
+        return Observable.merge(
+                loadMoreEvents(),
+                loadInitialEvents(),
+                querySubmissions()
+        )
+    }
+
+    private fun loadMoreEvents(): Observable<LoadMore> {
+        return Observable.create<LoadMore> { e ->
             with(ScrollListener(e)) {
                 recycler.addOnScrollListener(this)
                 e.setCancellable { recycler.removeOnScrollListener(this) }
@@ -47,34 +55,47 @@ class PhotoListViewImpl(root: PlatformView) : PhotoListView {
         }
     }
 
-    override fun render(state: PhotoScreenState) {
-        Log.e("State rendered", "$state")
-        when (state) {
-            is PhotoScreenState.Empty -> refreshLayout.isRefreshing = true
-            is PhotoScreenState.Loading -> refreshLayout.isRefreshing = true
-            is PhotoScreenState.Loaded ->  {
-                refreshLayout.isRefreshing = false
-                photosAdapter.items = state.photos
-                if (recycler.adapter == null) {
-                    recycler.adapter = photosAdapter
-                }
-                photosAdapter.notifyDataSetChanged()
-            }
-            is PhotoScreenState.Error -> {
-                refreshLayout.isRefreshing = false
-                Snackbar.make(recycler, R.string.error, LENGTH_SHORT).show()
-            }
-        }
+    private fun loadInitialEvents(): Observable<Initial> = Observable.just(Initial)
+
+    private fun querySubmissions(): Observable<Query> {
+        return searchView
+                .queryTextChangeEvents()
+                .filter{it.isSubmitted}
+                .map { Query(it.queryText().toString()) }
     }
 
-    override fun loadInitialEvents(): Observable<Unit> = Observable.just(Unit)
+    override fun render(state: Observable<out PhotoScreenState>) {
+        state
+                .subscribe({
+                    Log.e("State rendered", "$it")
+                    when (it) {
+                        is Empty -> refreshLayout.isRefreshing = true
+                        is Loading -> {
+                            refreshLayout.isRefreshing = true
+                            setPhotos(it.photos)
+                        }
+                        is Loaded ->  {
+                            refreshLayout.isRefreshing = false
+                            setPhotos(it.photos)
+                        }
+                        is Error -> {
+                            refreshLayout.isRefreshing = false
+                            Snackbar.make(recycler, R.string.error, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                },{})
+    }
 
-    override fun querySubmissions(): Observable<SearchViewQueryTextEvent> {
-        return searchView.queryTextChangeEvents()
+    private fun setPhotos(photos: List<PhotoItem>) {
+        photosAdapter.items = photos
+        if (recycler.adapter == null) {
+            recycler.adapter = photosAdapter
+        }
+        photosAdapter.notifyDataSetChanged()
     }
 
     private inner class ScrollListener(
-            private val emitter: ObservableEmitter<Unit>
+            private val emitter: ObservableEmitter<LoadMore>
     ) : RecyclerView.OnScrollListener() {
 
         override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
@@ -85,7 +106,7 @@ class PhotoListViewImpl(root: PlatformView) : PhotoListView {
             val totalItemCount = lm.itemCount - 1
             val lastVisibleItem = lm.findLastCompletelyVisibleItemPosition()
             if (!refreshLayout.isRefreshing && totalItemCount <= lastVisibleItem) {
-                emitter.onNext(Unit)
+                emitter.onNext(LoadMore)
             }
         }
     }

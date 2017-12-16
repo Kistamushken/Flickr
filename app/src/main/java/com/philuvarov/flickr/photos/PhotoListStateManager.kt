@@ -3,6 +3,7 @@ package com.philuvarov.flickr.photos
 import android.os.Bundle
 import com.philuvarov.flickr.base.StateContainer
 import com.philuvarov.flickr.base.StateKeeper
+import com.philuvarov.flickr.photos.PhotoScreenState.Empty
 import javax.inject.Inject
 import kotlin.reflect.KProperty
 
@@ -11,7 +12,7 @@ class PhotoListStateManager @Inject constructor() :
         StateContainer<PhotoScreenState>,
         StateKeeper {
 
-    private var state: PhotoScreenState = PhotoScreenState.Empty()
+    private var state: PhotoScreenState = Empty()
 
     override fun restore(savedState: Bundle?) {
         state = savedState?.getParcelable(KEY_PHOTOS_STATE) ?: state
