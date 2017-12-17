@@ -7,12 +7,12 @@ import com.nhaarman.mockito_kotlin.whenever
 import com.philuvarov.flickr.assertLastValue
 import com.philuvarov.flickr.executeImmediately
 import com.philuvarov.flickr.executeOnTestSubscriber
-import com.philuvarov.flickr.photos.PhotoScreenAction.Initial
-import com.philuvarov.flickr.photos.PhotoScreenAction.LoadMore
-import com.philuvarov.flickr.photos.PhotoScreenAction.LoadingError
-import com.philuvarov.flickr.photos.PhotoScreenAction.PageLoaded
-import com.philuvarov.flickr.photos.PhotoScreenAction.Query
-import com.philuvarov.flickr.photos.PhotoScreenAction.QueryLoaded
+import com.philuvarov.flickr.photos.PhotoScreenMessage.Initial
+import com.philuvarov.flickr.photos.PhotoScreenMessage.LoadMore
+import com.philuvarov.flickr.photos.PhotoScreenMessage.LoadingError
+import com.philuvarov.flickr.photos.PhotoScreenMessage.PageLoaded
+import com.philuvarov.flickr.photos.PhotoScreenMessage.Query
+import com.philuvarov.flickr.photos.PhotoScreenMessage.QueryLoaded
 import com.philuvarov.flickr.photos.PhotoScreenState.Empty
 import com.philuvarov.flickr.photos.PhotoScreenState.Loading
 import com.philuvarov.flickr.remote.Api
@@ -40,7 +40,7 @@ class PhotoListDriverTest {
     @JvmField
     val rule: MockitoRule = MockitoJUnit.rule()
 
-    private val events = PublishSubject.create<Pair<PhotoScreenAction, PhotoScreenState>>()
+    private val events = PublishSubject.create<Pair<PhotoScreenMessage, PhotoScreenState>>()
 
     private lateinit var driver: PhotoListDriver
 

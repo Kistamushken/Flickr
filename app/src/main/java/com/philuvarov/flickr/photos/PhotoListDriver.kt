@@ -1,12 +1,12 @@
 package com.philuvarov.flickr.photos
 
 import com.philuvarov.flickr.base.Driver
-import com.philuvarov.flickr.photos.PhotoScreenAction.Initial
-import com.philuvarov.flickr.photos.PhotoScreenAction.LoadMore
-import com.philuvarov.flickr.photos.PhotoScreenAction.LoadingError
-import com.philuvarov.flickr.photos.PhotoScreenAction.PageLoaded
-import com.philuvarov.flickr.photos.PhotoScreenAction.Query
-import com.philuvarov.flickr.photos.PhotoScreenAction.QueryLoaded
+import com.philuvarov.flickr.photos.PhotoScreenMessage.Initial
+import com.philuvarov.flickr.photos.PhotoScreenMessage.LoadMore
+import com.philuvarov.flickr.photos.PhotoScreenMessage.LoadingError
+import com.philuvarov.flickr.photos.PhotoScreenMessage.PageLoaded
+import com.philuvarov.flickr.photos.PhotoScreenMessage.Query
+import com.philuvarov.flickr.photos.PhotoScreenMessage.QueryLoaded
 import com.philuvarov.flickr.photos.PhotoScreenState.Empty
 import com.philuvarov.flickr.photos.PhotoScreenState.Loaded
 import com.philuvarov.flickr.remote.Api
@@ -21,8 +21,8 @@ private const val DEFAULT_QUERY = "kittens"
 @Singleton
 class PhotoListDriver @Inject constructor(private val schedulers: SchedulersProvider,
                                           private val converter: PhotoItemConverter,
-                                          private val api: Api) : Driver<PhotoScreenAction, PhotoScreenState>() {
-    override val composer: ObservableTransformer<Pair<PhotoScreenAction, PhotoScreenState>, PhotoScreenAction> = ObservableTransformer {
+                                          private val api: Api) : Driver<PhotoScreenMessage, PhotoScreenState>() {
+    override val composer: ObservableTransformer<Pair<PhotoScreenMessage, PhotoScreenState>, PhotoScreenMessage> = ObservableTransformer {
             it
                     .filter { it.second !is Loaded }
                     .flatMap { (action, state) ->
@@ -45,8 +45,8 @@ class PhotoListDriver @Inject constructor(private val schedulers: SchedulersProv
     private fun load(
             page: Int = 1,
             query: String? = null,
-            onSuccess: (List<PhotoItem>) -> PhotoScreenAction,
-            onError: (Throwable) -> LoadingError = { LoadingError(query, page) }): Observable<PhotoScreenAction> {
+            onSuccess: (List<PhotoItem>) -> PhotoScreenMessage,
+            onError: (Throwable) -> LoadingError = { LoadingError(query, page) }): Observable<PhotoScreenMessage> {
         return getRequestObservable(query, page)
                 .map { it -> it.photos }
                 .map { it.map { converter.convert(it) } }
