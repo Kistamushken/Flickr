@@ -2,12 +2,12 @@ package com.philuvarov.flickr.photos
 
 import com.philuvarov.flickr.base.Msg
 
-sealed class PhotoScreenAction : Msg {
-    object Initial : PhotoScreenAction()
-    object LoadMore : PhotoScreenAction()
-    class Query(val query: String) : PhotoScreenAction()
-    class PageLoaded(val photos: List<PhotoItem>, val query: String?, val page: Int) : PhotoScreenAction()
-    class QueryLoaded(val photos: List<PhotoItem>, val query: String?) : PhotoScreenAction()
-    class LoadingError(val query: String?, val page: Int) : PhotoScreenAction()
-    class Test : PhotoScreenAction()
+sealed class PhotoScreenMessage : Msg {
+    object Initial : PhotoScreenMessage()
+    object LoadMore : PhotoScreenMessage()
+    class Query(val query: String) : PhotoScreenMessage()
+    class PageLoaded(val photos: List<PhotoItem>, val query: String?, val page: Int) : PhotoScreenMessage()
+    class QueryLoaded(val photos: List<PhotoItem>, val query: String?) : PhotoScreenMessage()
+    class LoadingError(val query: String?, val page: Int) : PhotoScreenMessage()
+    class Test : PhotoScreenMessage()
 }

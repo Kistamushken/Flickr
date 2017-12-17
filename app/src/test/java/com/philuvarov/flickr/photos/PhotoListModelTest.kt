@@ -3,12 +3,12 @@ package com.philuvarov.flickr.photos
 import com.philuvarov.flickr.assertLastValue
 import com.philuvarov.flickr.base.TestStateContainer
 import com.philuvarov.flickr.executeOnTestSubscriber
-import com.philuvarov.flickr.photos.PhotoScreenAction.Initial
-import com.philuvarov.flickr.photos.PhotoScreenAction.LoadMore
-import com.philuvarov.flickr.photos.PhotoScreenAction.LoadingError
-import com.philuvarov.flickr.photos.PhotoScreenAction.PageLoaded
-import com.philuvarov.flickr.photos.PhotoScreenAction.Query
-import com.philuvarov.flickr.photos.PhotoScreenAction.QueryLoaded
+import com.philuvarov.flickr.photos.PhotoScreenMessage.Initial
+import com.philuvarov.flickr.photos.PhotoScreenMessage.LoadMore
+import com.philuvarov.flickr.photos.PhotoScreenMessage.LoadingError
+import com.philuvarov.flickr.photos.PhotoScreenMessage.PageLoaded
+import com.philuvarov.flickr.photos.PhotoScreenMessage.Query
+import com.philuvarov.flickr.photos.PhotoScreenMessage.QueryLoaded
 import com.philuvarov.flickr.photos.PhotoScreenState.Empty
 import com.philuvarov.flickr.photos.PhotoScreenState.Error
 import com.philuvarov.flickr.photos.PhotoScreenState.Loaded
@@ -31,7 +31,7 @@ class PhotoListModelTest {
 
     private val stateContainer = TestStateContainer<PhotoScreenState>(Empty())
 
-    private val actionsStream = PublishSubject.create<PhotoScreenAction>()
+    private val actionsStream = PublishSubject.create<PhotoScreenMessage>()
 
     @Before
     fun setUp() {
@@ -182,5 +182,5 @@ class PhotoListModelTest {
 
     private fun photoItem(id: Long = 0L, url: String = "") = PhotoItem(id, url)
 
-    private fun photoListModel() = PhotoListModel()
+    private fun photoListModel() = PhotoListModel(stateContainer)
 }

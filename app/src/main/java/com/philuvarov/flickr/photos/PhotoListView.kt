@@ -10,9 +10,9 @@ import android.widget.Toast
 import com.jakewharton.rxbinding2.support.v7.widget.queryTextChangeEvents
 import com.philuvarov.flickr.R
 import com.philuvarov.flickr.base.View
-import com.philuvarov.flickr.photos.PhotoScreenAction.Initial
-import com.philuvarov.flickr.photos.PhotoScreenAction.LoadMore
-import com.philuvarov.flickr.photos.PhotoScreenAction.Query
+import com.philuvarov.flickr.photos.PhotoScreenMessage.Initial
+import com.philuvarov.flickr.photos.PhotoScreenMessage.LoadMore
+import com.philuvarov.flickr.photos.PhotoScreenMessage.Query
 import com.philuvarov.flickr.photos.PhotoScreenState.Empty
 import com.philuvarov.flickr.photos.PhotoScreenState.Error
 import com.philuvarov.flickr.photos.PhotoScreenState.Loaded
@@ -21,7 +21,7 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import android.view.View as PlatformView
 
-class PhotoListView(root: PlatformView) : View<PhotoScreenState, PhotoScreenAction> {
+class PhotoListView(root: PlatformView) : View<PhotoScreenState, PhotoScreenMessage> {
 
     private val recycler = root.findViewById<RecyclerView>(R.id.recycler)
     private val searchView = root.findViewById<SearchView>(R.id.search)
@@ -38,7 +38,7 @@ class PhotoListView(root: PlatformView) : View<PhotoScreenState, PhotoScreenActi
         recycler.layoutManager = lm
     }
 
-    override fun intents(): Observable<PhotoScreenAction> {
+    override fun intents(): Observable<PhotoScreenMessage> {
         return Observable.merge(
                 loadMoreEvents(),
                 loadInitialEvents(),

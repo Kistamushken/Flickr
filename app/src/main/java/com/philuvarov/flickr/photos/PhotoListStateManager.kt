@@ -5,9 +5,10 @@ import com.philuvarov.flickr.base.StateContainer
 import com.philuvarov.flickr.base.StateKeeper
 import com.philuvarov.flickr.photos.PhotoScreenState.Empty
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.reflect.KProperty
 
-@PhotosScope
+@Singleton
 class PhotoListStateManager @Inject constructor() :
         StateContainer<PhotoScreenState>,
         StateKeeper {
